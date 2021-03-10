@@ -15,21 +15,32 @@
 #define DENDRITIC_ARBOUR_GROWTH_H_
 
 #include "biodynamo.h"
+#include "behavior.h"
+#include "neuroscience/neuroscience.h"
 
 namespace bdm {
 
 inline int Simulate(int argc, const char** argv) {
+  neuroscience::InitModule();
   Simulation simulation(argc, argv);
-
-  // Define initial model - in this example: single cell at origin
   auto* rm = simulation.GetResourceManager();
-  auto* cell = new Cell(30);
-  rm->AddAgent(cell);
 
-  // Run simulation for one timestep
-  simulation.GetScheduler()->Simulate(1);
+  // create a neuron at position 0, 0, 0
+  auto* neuron = new neuroscience::NeuronSoma({0,0,0});
+  neuron->SetDiameter(10);
+  rm->AddAgent(neuron);
 
-  std::cout << "Simulation completed successfully!" << std::endl;
+  // extend one neurite from the neuron at position 0, 0, 1
+  auto* neurite = neuron->ExtendNewNeurite({0, 0, 1});
+  neurite->SetDiameter(1);
+  // add a behavior to the neurite
+  neurite->AddBehavior(new DendriteGrowth());
+
+  std::cout << "simulating.." << std::endl;
+  // Run simulation for x timestep
+  simulation.GetScheduler()->Simulate(100);
+
+  std::cout << "done" << std::endl;
   return 0;
 }
 

@@ -1,0 +1,15 @@
+{
+  "bdm::Param": {
+    "max_displacement": 3.0,
+    "calculate_gradients": true,
+    "export_visualization": true,
+    "visualize_agents": {
+      "NeuronSoma": [],
+      "NeuriteElement": []
+    }
+  },
+  "bdm::neuroscience::Param": {
+    "neurite_max_length": 5.0,
+    "neurite_min_length": 1.0
+  }
+}

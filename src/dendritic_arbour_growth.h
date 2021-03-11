@@ -38,7 +38,7 @@ inline int Simulate(int argc, const char** argv) {
 
   std::cout << "simulating.." << std::endl;
   // Run simulation for x timestep
-  simulation.GetScheduler()->Simulate(100);
+  simulation.GetScheduler()->Simulate(250);
 
   std::cout << "done" << std::endl;
   return 0;

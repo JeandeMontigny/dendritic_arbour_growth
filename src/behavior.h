@@ -21,7 +21,7 @@ struct DendriteGrowth : public Behavior {
 
     if (dendrite->GetDiameter() > 0.5) {
 
-      Double3 growth_direction = {0, 0, 1};
+      Double3 growth_direction = {0, 0, 0.5};
 
       double randomness_weight = 1;
       double old_direction_weight = 2;
@@ -35,13 +35,13 @@ struct DendriteGrowth : public Behavior {
           old_direction + random_direction + growth_direction;
 
       // elongate the dendrite toward new_step_direction
-      dendrite->ElongateTerminalEnd(10, new_step_direction);
+      dendrite->ElongateTerminalEnd(50, new_step_direction);
       // shrink diameter
       dendrite->SetDiameter(dendrite->GetDiameter() - 0.001);
 
       if (dendrite->IsTerminal() && dendrite->GetDiameter() > 0.6
           && random->Uniform(0, 1) < dendrite->GetDiameter() * 0.01) {
-        auto rand_noise = random->template UniformArray<3>(-0.1, 0.1);
+        auto rand_noise = random->template UniformArray<3>(-2, 2);
         Double3 branch_direction =
             Math::Perp3(dendrite->GetUnitaryAxisDirectionVector() + rand_noise,
                         random->Uniform(0, 1)) + dendrite->GetSpringAxis();

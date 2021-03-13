@@ -24,23 +24,30 @@ inline int Simulate(int argc, const char** argv) {
   neuroscience::InitModule();
   Simulation simulation(argc, argv);
   auto* rm = simulation.GetResourceManager();
+  auto* rand = simulation.GetRandom();
 
-  // create a neuron at position 0, 0, 0
-  auto* neuron = new neuroscience::NeuronSoma({0,0,0});
-  neuron->SetDiameter(10);
-  rm->AddAgent(neuron);
+  for (int N=0; N<20; N++)
+  {
+    Double3 xyz = {rand->Uniform(0,100), rand->Uniform(0,100), 0.0};
+    //
+    auto* neuron = new neuroscience::NeuronSoma(xyz);
+    neuron->SetDiameter(10);
+    rm->AddAgent(neuron);
+    {
+      auto* neurite = neuron->ExtendNewNeurite({0.,0.,+1.});
+      neurite->SetDiameter(1);
+      neurite->AddBehavior(new DendriteGrowth());
+    }
+    {
+      auto* neurite = neuron->ExtendNewNeurite({0.,0.,-1.});
+      neurite->SetDiameter(1);
+      neurite->AddBehavior(new DendriteGrowth());
+    }
+  }
 
-  // extend one neurite from the neuron at position 0, 0, 1
-  auto* neurite = neuron->ExtendNewNeurite({0, 0, 1});
-  neurite->SetDiameter(1);
-  // add a behavior to the neurite
-  neurite->AddBehavior(new DendriteGrowth());
-
-  std::cout << "simulating.." << std::endl;
-  // Run simulation for x timestep
+  std::cout << "Simulating... " << std::endl;
   simulation.GetScheduler()->Simulate(250);
 
-  std::cout << "done" << std::endl;
   return 0;
 }
 

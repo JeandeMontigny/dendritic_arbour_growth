@@ -21,15 +21,20 @@ struct DendriteGrowth : public Behavior {
 
     if (dendrite->GetDiameter() > 0.5) {
 
-      Double3 growth_direction = {0, 0, 0.5};
+      const Double3 dendrite_axis = dendrite->GetSpringAxis();
 
-      double randomness_weight = 1;
-      double old_direction_weight = 2;
+      const double growth_weight = 0.50;
+      const Double3 growth_direction = dendrite_axis * growth_weight;
 
-      Double3 random_axis = {random->Uniform(-1, 1), random->Uniform(-1, 1),
-                             random->Uniform(-1, 1)};
-      Double3 random_direction = random_axis * randomness_weight;
-      Double3 old_direction = dendrite->GetSpringAxis() * old_direction_weight;
+      const double randomness_weight = 0.35;
+      const double old_direction_weight = 1.50;
+
+      Double3 random_axis = { random->Uniform(-1,1) ,
+                              random->Uniform(-1,1) ,
+                              random->Uniform(-1,1) };
+      const Double3 random_direction = random_axis * randomness_weight;
+
+      const Double3 old_direction = dendrite_axis * old_direction_weight;
 
       Double3 new_step_direction =
           old_direction + random_direction + growth_direction;

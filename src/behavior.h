@@ -23,33 +23,37 @@ struct DendriteGrowth : public Behavior {
 
       const Double3 dendrite_axis = dendrite->GetSpringAxis();
 
-      const double growth_weight = 0.50;
-      const Double3 growth_direction = dendrite_axis * growth_weight;
+      {
+        const double growth_weight = 0.50;
+        const Double3 growth_direction = dendrite_axis * growth_weight;
 
-      const double randomness_weight = 0.35;
-      const double old_direction_weight = 1.50;
+        const double randomness_weight = 0.35;
+        const double old_direction_weight = 1.50;
 
-      Double3 random_axis = { random->Uniform(-1,1) ,
-                              random->Uniform(-1,1) ,
-                              random->Uniform(-1,1) };
-      const Double3 random_direction = random_axis * randomness_weight;
+        auto random_axis = random->template UniformArray<3>(-1, 1);
 
-      const Double3 old_direction = dendrite_axis * old_direction_weight;
+        const Double3 random_direction = random_axis * randomness_weight;
 
-      Double3 new_step_direction =
-          old_direction + random_direction + growth_direction;
+        const Double3 old_direction = dendrite_axis * old_direction_weight;
 
-      // elongate the dendrite toward new_step_direction
-      dendrite->ElongateTerminalEnd(50, new_step_direction);
-      // shrink diameter
-      dendrite->SetDiameter(dendrite->GetDiameter() - 0.001);
+        Double3 new_step_direction =
+            old_direction + random_direction + growth_direction;
+        // elongate the dendrite toward new_step_direction
+        dendrite->ElongateTerminalEnd(50, new_step_direction);
+        // shrink diameter
+        dendrite->SetDiameter(dendrite->GetDiameter() * 0.999);
+      }
 
-      if (dendrite->IsTerminal() && dendrite->GetDiameter() > 0.6
-          && random->Uniform(0, 1) < dendrite->GetDiameter() * 0.01) {
+      if ( dendrite->IsTerminal() &&
+           dendrite->GetDiameter() > 0.6 &&
+           random->Uniform() < dendrite->GetDiameter() * 0.01 )
+      {
         auto rand_noise = random->template UniformArray<3>(-2, 2);
-        Double3 branch_direction =
+        //
+        const Double3 branch_direction =
             Math::Perp3(dendrite->GetUnitaryAxisDirectionVector() + rand_noise,
                         random->Uniform(0, 1)) + dendrite->GetSpringAxis();
+
         auto* dendrite_2 = bdm_static_cast<neuroscience::NeuriteElement*>(
             dendrite->Branch(branch_direction));
         dendrite_2->SetDiameter(dendrite->GetDiameter());

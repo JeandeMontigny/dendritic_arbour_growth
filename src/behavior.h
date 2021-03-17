@@ -23,6 +23,7 @@ struct DendriteGrowth : public Behavior {
 
       const Double3 dendrite_axis = dendrite->GetSpringAxis();
 
+      if ( dendrite->IsTerminal() )
       {
         const double growth_weight = 0.50;
         const Double3 growth_direction = dendrite_axis * growth_weight;
